@@ -10,23 +10,25 @@ department_id={
     "MECH":4
 }
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='Templates')
 
 db = {
     'host': 'localhost',
-    'database': 'RESEARCH_PAPER_REPO',
+    'database': 'RESEARCH_PAPER_REPO1',
     'user': 'root',
-    'password': 'srujan123@RAI'
+    'password': '2787',
+    'charset':'utf8mb4',  # Ensure compatibility
+    'collation':'utf8mb4_general_ci' 
 }
 
 try:
     connection = mysql.connector.connect(**db)
+    cursor = connection.cursor()
     if connection.is_connected():
         print("database connected successfully")
 except mysql.connector.Error as e:
     print('error', e)
 
-cursor = connection.cursor()
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS users
                 (id INT AUTO_INCREMENT PRIMARY KEY,
@@ -89,7 +91,7 @@ def admin():
         if 'department' in request.form: 
             department = request.form['department']
             department_id_value = department_id.get(department, None)
-            tables = ['Journal', 'Conference', 'BookChapter', 'FundedResearchProject', 'ResearchProposalSubmitted', 'Consultancy', 'ProductDevelopment', 'Patent', 'FDPWORKSHOPSEMINAR', 'MOUCS', 'AchievementsAndAwards', 'MOUS', 'FundedStudentProject']
+            tables = ['JOURNAL', 'CONFERENCE', 'BOOKCHAPTER', 'FUNDEDRESEARCHPROJECT', 'RESEARCHPROPOSALSUBMITTED', 'CONSULTANCY', 'PRODUCTDEVELOPMENT', 'PATENT', 'FDPWORKSHOPSEMINAR', 'MOUCS', 'ACHIEVEMENTSANDAWARDS', 'MOUS', 'FUNDEDSTUDENTPROJECT']
             counts = []
             for table in tables:
                 cursor.execute(f"SELECT COUNT(*) FROM {table} WHERE DEPARTMENT_ID=%s", (department_id_value,))
@@ -518,7 +520,7 @@ def user():
         return render_template("user.html", message='Input not found')
 
 
-@app.route('/landing_page',methods=['GET','POST'])
+@app.route('/Templates',methods=['GET','POST'])
 def landing_page():
     if request.method=="POST":
       return  redirect(url_for(login))
@@ -528,5 +530,5 @@ def landing_page():
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
